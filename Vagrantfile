@@ -1,4 +1,10 @@
 
+#global_action=ENV['UCP_PROVISON_ACTION']
+if ENV['UCP_PROVISON_ACTION']
+  global_action=ENV['UCP_PROVISON_ACTION']
+else
+  global_action="install"
+end
 boxes = [
     {
         :node_name => "ucp-manager",
@@ -88,7 +94,7 @@ Vagrant.configure(2) do |config|
       ucpip=opts[:node_managementip]
 
        #config.vm.provision "shell", inline: <<-SHELL
-       config.vm.provision :shell, :path => 'ddc_install.sh', :args => [nodename,ucprol, ucpcontrollerip,ucpip,ucpsan]
+       config.vm.provision :shell, :path => 'ddc_install.sh', :args => [global_action,nodename,ucprol, ucpcontrollerip,ucpip,ucpsan]
 #       docker run --rm -it --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install -i --host-addressdocker run --rm -it --name ucp -v /var/run/docker.sock:/var/run/docker.sock
 # docker/ucp install --host-address opts[:node_managementip]
        #SHELL
