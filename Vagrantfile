@@ -5,22 +5,26 @@ boxes = [
         :node_managementip => "10.0.100.10",
         :node_serviceip => "192.168.100.10",
         :node_mem => "2048",
-        :node_cpu => "1"
+        :node_cpu => "1",
+        :node_ucprol => "controller",
+        :node_ucpsan => "ucp-manager",
     },
-    {
-        :node_name => "ucp-node1",
-        :node_managementip => "10.0.100.11",
-        :node_serviceip => "192.168.100.11",
-        :node_mem => "2048",
-        :node_cpu => "1"
-    },
-    {
-        :node_name => "ucp-node2",
-        :node_managementip => "10.0.100.12",
-        :node_serviceip => "192.168.100.12",
-        :node_mem => "2048",
-        :node_cpu => "1"
-    },
+    # {
+    #     :node_name => "ucp-node1",
+    #     :node_managementip => "10.0.100.11",
+    #     :node_serviceip => "192.168.100.11",
+    #     :node_mem => "2048",
+    #     :node_cpu => "1",
+    #     :node_ucp_rol=> "controller"
+    # },
+    # {
+    #     :node_name => "ucp-node2",
+    #     :node_managementip => "10.0.100.12",
+    #     :node_serviceip => "192.168.100.12",
+    #     :node_mem => "2048",
+    #     :node_cpu => "1",
+    #     :node_ucp_rol=> "controller"
+    # },
 ]
 
 Vagrant.configure(2) do |config|
@@ -40,17 +44,18 @@ Vagrant.configure(2) do |config|
 
       config.vm.network "private_network",
       ip: opts[:node_managementip],
-      virtualbox__intnet: "DOCKER_MANAGEMENT"
+      virtualbox__intnet: "DOCKER_PUBLIC"
 
       config.vm.network "private_network",
       ip: opts[:node_serviceip],
-      virtualbox__intnet: "DOCKER_SERVICE"
+      virtualbox__intnet: "DOCKER_STORAGE"
 
 
-      # if opts[:node_name] == "ucp-manager"
-    	#  config.vm.network "forwarded_port", guest: 443, host: 8443
+      if opts[:node_ucprol] == "controller"
+    	  config.vm.network "forwarded_port", guest: 443, host: 8443, auto_correct: true
+        ucpcontrollerip=opts[:node_managementip]
     	#  #config.vm.network "forwarded_port", guest: 22, host: 52222
-      # end
+      end
 
       config.vm.provision "shell", inline: <<-SHELL
         sudo apt-get update -qq
@@ -76,6 +81,19 @@ Vagrant.configure(2) do |config|
         echo "10.0.200.14 ucp-replica1 ucp-replica1.dockerlab.local" >>/etc/hosts
         echo "10.0.200.15 ucp-replica2 ucp-replica2.dockerlab.local" >>/etc/hosts
       SHELL
+
+      nodename=opts[:node_name]
+      ucprol=opts[:node_ucprol]
+      ucpsan=opts[:node_ucpsan]
+      ucpip=opts[:node_managementip]
+
+       #config.vm.provision "shell", inline: <<-SHELL
+       config.vm.provision :shell, :path => 'ddc_install.sh', :args => [nodename,ucprol, ucpcontrollerip,ucpip,ucpsan]
+#       docker run --rm -it --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install -i --host-addressdocker run --rm -it --name ucp -v /var/run/docker.sock:/var/run/docker.sock
+# docker/ucp install --host-address opts[:node_managementip]
+       #SHELL
+
+
     end
   end
 end
