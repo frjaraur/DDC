@@ -48,8 +48,8 @@ boxes = [
 
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
-  config.vm.synced_folder "tmp_deploying_stage/", "/tmp_deploying_stage"
-  config.vm.synced_folder "licenses/", "/licenses"
+  config.vm.synced_folder "tmp_deploying_stage/", "/tmp_deploying_stage",create:true
+  config.vm.synced_folder "licenses/", "/licenses",create:true
 
 
   boxes.each do |opts|
