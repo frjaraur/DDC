@@ -37,6 +37,7 @@ then
 	curl -k https://${ucpcontrollerip}/ca > ${VAGRANT_PROVISION_DIR}/ucp-ca.pem
 
 	docker run --rm --name simple-ucp-tools -v /tmp_deploying_stage:/OUTDIR hopla/simple-ucp-tools -n https://10.0.100.10
+
 	export DOCKER_TLS_VERIFY=1
 	export DOCKER_CERT_PATH="/tmp_deploying_stage"
 	export DOCKER_HOST=tcp://${ucpcontrollerip}:443

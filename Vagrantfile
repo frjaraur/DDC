@@ -124,7 +124,7 @@ Vagrant.configure(2) do |config|
 
       config.vm.provision :shell, :path => 'ddc_install.sh', :args => [ global_action, nodename, ucprole, ucpcontrollerip, ucpip, ucpsan ]
 
-      if opts[:node_dtr]
+      if opts[:node_dtr] == true
         config.vm.network "forwarded_port", guest: 443, host: 7443, auto_correct: true
         config.vm.provision :shell, :path => 'dtr_install.sh', :args => [ global_action, nodename, ucpcontrollerip, ucpip, ucpsan, dtrurl ]
       end
