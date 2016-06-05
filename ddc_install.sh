@@ -28,16 +28,22 @@ case ${ucprole} in
 		then
 			echo "---- UCP MASTER CONTROLLER INSTALL ----"
 			echo docker run --rm \
-			--name ucp -v /var/run/docker.sock:/var/run/docker.sock \
+			--name ucp -v ${VAGRANT_PROVISION_DIR}/docker_subscription.lic:/docker_subscription.lic \
+			-v /var/run/docker.sock:/var/run/docker.sock \
 			docker/ucp install --host-address ${ucpip} --san ${ucpsan}
 
 			docker run --rm \
-			--name ucp -v /var/run/docker.sock:/var/run/docker.sock \
+			--name ucp -v ${VAGRANT_PROVISION_DIR}/docker_subscription.lic:/docker_subscription.lic \
+			-v /var/run/docker.sock:/var/run/docker.sock \
 			docker/ucp install --host-address ${ucpip} --san ${ucpsan}
-			UCP_SWARM_ID=$(docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp id )
+
+
+			echo "---- Preparing UCP Fingerprint ----"
+			ucpfingerprint=$(docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp fingerprint )
 			ucpcontrollerurl="https://${ucpcontrollerip}"
+
 			echo ${ucpcontrollerurl} > ${UCP_CONTROLLER_PROVISIONED}
-			echo ${UCP_SWARM_ID} >> ${UCP_CONTROLLER_PROVISIONED}
+			echo ${ucpfingerprint} >> ${UCP_CONTROLLER_PROVISIONED}
 		fi
 
 
@@ -53,11 +59,17 @@ case ${ucprole} in
 		echo docker run --rm -it --name ucp \
   	-v /var/run/docker.sock:/var/run/docker.sock \
   	docker/ucp join --host-address ${ucpip} --san ${ucpsan} \
-		--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) --fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED})
+		--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
+		--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED}) \
+		--admin-username admin --admin-password orca
 
-		# docker run --rm \
-		# --name ucp -v /var/run/docker.sock:/var/run/docker.sock \
-		# docker/ucp install --host-address $ucpip --san $ucpsan
+		docker run --rm -it --name ucp \
+  	-v /var/run/docker.sock:/var/run/docker.sock \
+  	docker/ucp join --host-address ${ucpip} --san ${ucpsan} \
+		--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
+		--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED}) \
+		--admin-username admin --admin-password orca
+
 	;;
 
 	*)
