@@ -15,3 +15,4 @@ licenses mut be included in "licenses" dir ....
 
 
 
+**** Always remove "tmp_deploying_stage" before a clean "vagrant up", for example if reseting environment with "vagrant destroy -f",
