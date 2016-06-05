@@ -37,7 +37,7 @@ case ${ucprole} in
 			docker/ucp install --host-address ${ucpip} --san ${ucpsan}
 
 			docker run --rm \
-			--name ucp -v ${VAGRANT_PROVISION_DIR}/docker_subscription.lic:/docker_subscription.lic \
+			--name ucp -v ${VAGRANT_LICENSES_DIR}/docker_subscription.lic:/docker_subscription.lic \
 			-v /var/run/docker.sock:/var/run/docker.sock \
 			docker/ucp install --host-address ${ucpip} --san ${ucpsan}
 
