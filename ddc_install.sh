@@ -6,7 +6,7 @@ ucpcontrollerip=$4
 ucpip=$5
 ucpsan=$6
 
-VAGRANT_PROVISION_DIR=/tmp_provision
+VAGRANT_PROVISION_DIR=/tmp_deploying_stage
 
 echo "USER: $(whoami)"
 
