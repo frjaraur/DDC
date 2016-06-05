@@ -5,24 +5,28 @@ if ENV['UCP_PROVISON_ACTION']
 else
   global_action="install"
 end
+
+ucpcontrollerip="null"
+
 boxes = [
     {
         :node_name => "ucp-manager",
         :node_managementip => "10.0.100.10",
         :node_serviceip => "192.168.100.10",
-        :node_mem => "2048",
+        :node_mem => "3072",
         :node_cpu => "1",
         :node_ucprol => "controller",
         :node_ucpsan => "ucp-manager",
     },
-    # {
-    #     :node_name => "ucp-node1",
-    #     :node_managementip => "10.0.100.11",
-    #     :node_serviceip => "192.168.100.11",
-    #     :node_mem => "2048",
-    #     :node_cpu => "1",
-    #     :node_ucp_rol=> "controller"
-    # },
+    {
+        :node_name => "ucp-node1",
+        :node_managementip => "10.0.100.11",
+        :node_serviceip => "192.168.100.11",
+        :node_mem => "2048",
+        :node_cpu => "1",
+        :node_ucprol=> "node",
+        :node_ucpsan => "ucp-node1",
+    },
     # {
     #     :node_name => "ucp-node2",
     #     :node_managementip => "10.0.100.12",
@@ -35,6 +39,8 @@ boxes = [
 
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
+  config.vm.synced_folder "tmp_provison/", "/tmp_provision"
+
   boxes.each do |opts|
   config.vm.define opts[:node_name] do |config|
   config.vm.hostname = opts[:node_name]
@@ -60,7 +66,6 @@ Vagrant.configure(2) do |config|
       if opts[:node_ucprol] == "controller"
     	  config.vm.network "forwarded_port", guest: 443, host: 8443, auto_correct: true
         ucpcontrollerip=opts[:node_managementip]
-    	#  #config.vm.network "forwarded_port", guest: 22, host: 52222
       end
 
       config.vm.provision "shell", inline: <<-SHELL
@@ -93,12 +98,7 @@ Vagrant.configure(2) do |config|
       ucpsan=opts[:node_ucpsan]
       ucpip=opts[:node_managementip]
 
-       #config.vm.provision "shell", inline: <<-SHELL
-       config.vm.provision :shell, :path => 'ddc_install.sh', :args => [global_action,nodename,ucprol, ucpcontrollerip,ucpip,ucpsan]
-#       docker run --rm -it --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install -i --host-addressdocker run --rm -it --name ucp -v /var/run/docker.sock:/var/run/docker.sock
-# docker/ucp install --host-address opts[:node_managementip]
-       #SHELL
-
+      config.vm.provision :shell, :path => 'ddc_install.sh', :args => [ global_action, nodename, ucprol, ucpcontrollerip, ucpip, ucpsan ]
 
     end
   end
