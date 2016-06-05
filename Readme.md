@@ -5,10 +5,13 @@ DEFAULTS to "admin" user with "orca" password...
 
 licenses mut be included in "licenses" dir ....
 
-/--
-  -Vagrantfile
-  -ddc_install.sh
-  /licenses
-          -docker_subscription.lic
-  /tmp_deploying_stage
-          - All install process runtime files will be located here ... be carefull, it should be empty or even don't exist on clean start (or after a vagrant destroy for example).
+.
+├── ddc_install.sh
+├── licenses
+│   └── docker_subscription.lic
+├── Readme.md
+├── tmp_deploying_stage All install process runtime files will be located here ... be carefull, it should be empty or even don't exist on clean start (or after a vagrant destroy for example).
+└── Vagrantfile
+
+
+
