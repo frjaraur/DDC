@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 action=$1
 nodename=$2
 ucprole=$3
@@ -11,7 +11,7 @@ VAGRANT_LICENSES_DIR=/licenses
 
 echo "USER: $(whoami)"
 
-UCP_CONTROLLER_PROVISIONED=${VAGRANT_PROVISION_DIR}/ucp_controller_provisioned
+UCP_INFO=${VAGRANT_PROVISION_DIR}/ucp_info
 UCP_FINGERPRINT=""
 
 echo "PARAMETERS: [$*]"
@@ -28,7 +28,7 @@ UCP_NODE_PROVISIONED=${VAGRANT_PROVISION_DIR}/ucp_${nodename}.${ucprole}.provisi
 
 case ${ucprole} in
 	controller)
-		if [ ! -f ${UCP_CONTROLLER_PROVISIONED} ]
+		if [ ! -f ${UCP_INFO} ]
 		then
 			echo "---- UCP MASTER CONTROLLER INSTALL ----"
 			echo docker run --rm \
@@ -46,8 +46,8 @@ case ${ucprole} in
 			ucpfingerprint=$(docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp fingerprint )
 			ucpcontrollerurl="https://${ucpcontrollerip}"
 
-			echo ${ucpcontrollerurl} > ${UCP_CONTROLLER_PROVISIONED}
-			echo ${ucpfingerprint} >> ${UCP_CONTROLLER_PROVISIONED}
+			echo ${ucpcontrollerurl} > ${UCP_INFO}
+			echo ${ucpfingerprint} >> ${UCP_INFO}
 
 			touch ${UCP_NODE_PROVISIONED}
 
@@ -57,7 +57,7 @@ case ${ucprole} in
 	;;
 
 	replica)
-		if [ ! -f ${UCP_CONTROLLER_PROVISIONED} ]
+		if [ ! -f ${UCP_INFO} ]
 		then
 			echo "UCP manager not provisioned yet ..." && exit 0
 		fi
@@ -70,15 +70,15 @@ case ${ucprole} in
 			-v /var/run/docker.sock:/var/run/docker.sock \
 			docker/ucp join --replica --admin-username admin --admin-password orca \
 			--host-address ${ucpip} --san ${ucpsan} \
-			--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
-			--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED})
+			--url $(head -1 ${UCP_INFO}) \
+			--fingerprint $(tail -1 ${UCP_INFO})
 
 			docker run --rm --name ucp \
 			-v /var/run/docker.sock:/var/run/docker.sock \
 			docker/ucp join --replica --admin-username admin --admin-password orca \
 			--host-address ${ucpip} --san ${ucpsan} \
-			--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
-			--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED})
+			--url $(head -1 ${UCP_INFO}) \
+			--fingerprint $(tail -1 ${UCP_INFO})
 
 			#We will use old service standard
 			service docker restart
@@ -94,7 +94,7 @@ case ${ucprole} in
 
 
 	node)
-		if [ ! -f ${UCP_CONTROLLER_PROVISIONED} ]
+		if [ ! -f ${UCP_INFO} ]
 		then
 			echo "UCP manager not provisioned yet ..." && exit 0
 		fi
@@ -107,15 +107,15 @@ case ${ucprole} in
 	  	-v /var/run/docker.sock:/var/run/docker.sock \
 	  	docker/ucp join --admin-username admin --admin-password orca \
 			--host-address ${ucpip} --san ${ucpsan} \
-			--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
-			--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED})
+			--url $(head -1 ${UCP_INFO}) \
+			--fingerprint $(tail -1 ${UCP_INFO})
 
 			docker run --rm --name ucp \
 	  	-v /var/run/docker.sock:/var/run/docker.sock \
 	  	docker/ucp join --admin-username admin --admin-password orca \
 			--host-address ${ucpip} --san ${ucpsan} \
-			--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
-			--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED})
+			--url $(head -1 ${UCP_INFO}) \
+			--fingerprint $(tail -1 ${UCP_INFO})
 
 			#We will use old service standard
 			service docker restart

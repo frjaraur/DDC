@@ -7,6 +7,7 @@ else
 end
 
 ucpcontrollerip="null"
+dtrurl="https://node2"
 
 boxes = [
     {
@@ -15,43 +16,44 @@ boxes = [
         :node_serviceip => "192.168.100.10",
         :node_mem => "3072",
         :node_cpu => "1",
-        :node_ucprol => "controller",
+        :node_ucprole => "controller",
         :node_ucpsan => "ucp-manager",
     },
-    {
-        :node_name => "ucp-replica1",
-        :node_managementip => "10.0.100.11",
-        :node_serviceip => "192.168.100.11",
-        :node_mem => "2048",
-        :node_cpu => "1",
-        :node_ucprol=> "replica",
-        :node_ucpsan => "ucp-replica1",
-    },
-    {
-        :node_name => "ucp-replica2",
-        :node_managementip => "10.0.100.12",
-        :node_serviceip => "192.168.100.12",
-        :node_mem => "2048",
-        :node_cpu => "1",
-        :node_ucprol=> "replica",
-        :node_ucpsan => "ucp-replica2",
-    },
-    {
-        :node_name => "ucp-node1",
-        :node_managementip => "10.0.100.13",
-        :node_serviceip => "192.168.100.13",
-        :node_mem => "2048",
-        :node_cpu => "1",
-        :node_ucprol=> "node",
-        :node_ucpsan => "ucp-node1",
-    },
+    # {
+    #     :node_name => "ucp-replica1",
+    #     :node_managementip => "10.0.100.11",
+    #     :node_serviceip => "192.168.100.11",
+    #     :node_mem => "2048",
+    #     :node_cpu => "1",
+    #     :node_ucprole=> "replica",
+    #     :node_ucpsan => "ucp-replica1",
+    # },
+    # {
+    #     :node_name => "ucp-replica2",
+    #     :node_managementip => "10.0.100.12",
+    #     :node_serviceip => "192.168.100.12",
+    #     :node_mem => "2048",
+    #     :node_cpu => "1",
+    #     :node_ucprole=> "replica",
+    #     :node_ucpsan => "ucp-replica2",
+    # },
+    # {
+    #     :node_name => "ucp-node1",
+    #     :node_managementip => "10.0.100.13",
+    #     :node_serviceip => "192.168.100.13",
+    #     :node_mem => "2048",
+    #     :node_cpu => "1",
+    #     :node_ucprole=> "node",
+    #     :node_ucpsan => "ucp-node1",
+    #     :node_dtr => true,
+    # },
     {
         :node_name => "ucp-node2",
         :node_managementip => "10.0.100.14",
         :node_serviceip => "192.168.100.14",
         :node_mem => "2048",
         :node_cpu => "1",
-        :node_ucprol=> "node",
+        :node_ucprole=> "node",
         :node_ucpsan => "ucp-node2",
     },
 
@@ -64,13 +66,13 @@ Vagrant.configure(2) do |config|
 
 
   boxes.each do |opts|
-  config.vm.define opts[:node_name] do |config|
-  config.vm.hostname = opts[:node_name]
-  config.vm.provider "virtualbox" do |v|
-    v.name = opts[:node_name]
-    v.customize ["modifyvm", :id, "--memory", opts[:node_mem]]
-    v.customize ["modifyvm", :id, "--cpus", opts[:node_cpu]]
-  end
+    config.vm.define opts[:node_name] do |config|
+      config.vm.hostname = opts[:node_name]
+      config.vm.provider "virtualbox" do |v|
+        v.name = opts[:node_name]
+        v.customize ["modifyvm", :id, "--memory", opts[:node_mem]]
+        v.customize ["modifyvm", :id, "--cpus", opts[:node_cpu]]
+      end
 
       # config.vm.network "public_network",
       # bridge: "wlan0" ,
@@ -85,7 +87,7 @@ Vagrant.configure(2) do |config|
       virtualbox__intnet: "DOCKER_STORAGE"
 
 
-      if opts[:node_ucprol] == "controller"
+      if opts[:node_ucprole] == "controller"
     	  config.vm.network "forwarded_port", guest: 443, host: 8443, auto_correct: true
         ucpcontrollerip=opts[:node_managementip]
       end
@@ -116,11 +118,16 @@ Vagrant.configure(2) do |config|
       SHELL
 
       nodename=opts[:node_name]
-      ucprol=opts[:node_ucprol]
+      ucprole=opts[:node_ucprole]
       ucpsan=opts[:node_ucpsan]
       ucpip=opts[:node_managementip]
 
-      config.vm.provision :shell, :path => 'ddc_install.sh', :args => [ global_action, nodename, ucprol, ucpcontrollerip, ucpip, ucpsan ]
+      config.vm.provision :shell, :path => 'ddc_install.sh', :args => [ global_action, nodename, ucprole, ucpcontrollerip, ucpip, ucpsan ]
+
+      if opts[:node_dtr]
+        config.vm.network "forwarded_port", guest: 443, host: 7443, auto_correct: true
+        config.vm.provision :shell, :path => 'dtr_install.sh', :args => [ global_action, nodename, ucpcontrollerip, ucpip, ucpsan, dtrurl ]
+      end
 
     end
   end
