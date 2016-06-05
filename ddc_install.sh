@@ -22,6 +22,9 @@ echo "UCP MYIP: ${ucpip}"
 echo "-----------------"
 echo "ACTION: ${action}"
 
+
+UCP_NODE_PROVISIONED=${VAGRANT_PROVISION_DIR}/ucp_${nodename}.${ucprole}.provisioned
+
 case ${ucprole} in
 	controller)
 		if [ ! -f ${UCP_CONTROLLER_PROVISIONED} ]
@@ -44,31 +47,83 @@ case ${ucprole} in
 
 			echo ${ucpcontrollerurl} > ${UCP_CONTROLLER_PROVISIONED}
 			echo ${ucpfingerprint} >> ${UCP_CONTROLLER_PROVISIONED}
+
+			touch ${UCP_NODE_PROVISIONED}
+
 		fi
 
 
 	;;
+
+	replica)
+		if [ ! -f ${UCP_CONTROLLER_PROVISIONED} ]
+		then
+			echo "UCP manager not provisioned yet ..." && exit 0
+		fi
+
+		if [ ! -f ${UCP_NODE_PROVISIONED} ]
+		then
+			echo "---- UCP NODE INSTALL ----"
+
+			echo docker run --rm --name ucp \
+			-v /var/run/docker.sock:/var/run/docker.sock \
+			docker/ucp join --replica --admin-username admin --admin-password orca \
+			--host-address ${ucpip} --san ${ucpsan} \
+			--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
+			--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED})
+
+			docker run --rm --name ucp \
+			-v /var/run/docker.sock:/var/run/docker.sock \
+			docker/ucp join --replica --admin-username admin --admin-password orca \
+			--host-address ${ucpip} --san ${ucpsan} \
+			--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
+			--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED})
+
+			#We will use old service standard
+			service docker restart
+
+			touch ${UCP_NODE_PROVISIONED}
+		else
+			echo "UCP replica ${nodename} already provioned ..." && exit 0
+		fi
+
+
+	;;
+
+
 
 	node)
 		if [ ! -f ${UCP_CONTROLLER_PROVISIONED} ]
 		then
 			echo "UCP manager not provisioned yet ..." && exit 0
 		fi
-		echo "---- UCP NODE INSTALL ----"
 
-		echo docker run --rm -it --name ucp \
-  	-v /var/run/docker.sock:/var/run/docker.sock \
-  	docker/ucp join --host-address ${ucpip} --san ${ucpsan} \
-		--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
-		--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED}) \
-		--admin-username admin --admin-password orca
+		if [ ! -f ${UCP_NODE_PROVISIONED} ]
+		then
+			echo "---- UCP NODE INSTALL ----"
 
-		docker run --rm -it --name ucp \
-  	-v /var/run/docker.sock:/var/run/docker.sock \
-  	docker/ucp join --host-address ${ucpip} --san ${ucpsan} \
-		--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
-		--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED}) \
-		--admin-username admin --admin-password orca
+			echo docker run --rm --name ucp \
+	  	-v /var/run/docker.sock:/var/run/docker.sock \
+	  	docker/ucp join --admin-username admin --admin-password orca \
+			--host-address ${ucpip} --san ${ucpsan} \
+			--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
+			--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED})
+
+			docker run --rm --name ucp \
+	  	-v /var/run/docker.sock:/var/run/docker.sock \
+	  	docker/ucp join --admin-username admin --admin-password orca \
+			--host-address ${ucpip} --san ${ucpsan} \
+			--url $(head -1 ${UCP_CONTROLLER_PROVISIONED}) \
+			--fingerprint $(tail -1 ${UCP_CONTROLLER_PROVISIONED})
+
+			#We will use old service standard
+			service docker restart
+
+			touch ${UCP_NODE_PROVISIONED}
+		else
+			echo "UCP node ${nodename} already provioned ..." && exit 0
+		fi
+
 
 	;;
 

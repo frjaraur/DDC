@@ -35,6 +35,15 @@ boxes = [
     #     :node_cpu => "1",
     #     :node_ucp_rol=> "controller"
     # },
+    {
+        :node_name => "ucp-replica1",
+        :node_managementip => "10.0.100.13",
+        :node_serviceip => "192.168.100.13",
+        :node_mem => "2048",
+        :node_cpu => "1",
+        :node_ucprol=> "replica",
+        :node_ucpsan => "ucp-replica1",
+    },
 ]
 
 Vagrant.configure(2) do |config|
