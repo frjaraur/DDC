@@ -19,31 +19,42 @@ boxes = [
         :node_ucpsan => "ucp-manager",
     },
     {
-        :node_name => "ucp-node1",
+        :node_name => "ucp-replica1",
         :node_managementip => "10.0.100.11",
         :node_serviceip => "192.168.100.11",
-        :node_mem => "2048",
-        :node_cpu => "1",
-        :node_ucprol=> "node",
-        :node_ucpsan => "ucp-node1",
-    },
-    # {
-    #     :node_name => "ucp-node2",
-    #     :node_managementip => "10.0.100.12",
-    #     :node_serviceip => "192.168.100.12",
-    #     :node_mem => "2048",
-    #     :node_cpu => "1",
-    #     :node_ucp_rol=> "controller"
-    # },
-    {
-        :node_name => "ucp-replica1",
-        :node_managementip => "10.0.100.13",
-        :node_serviceip => "192.168.100.13",
         :node_mem => "2048",
         :node_cpu => "1",
         :node_ucprol=> "replica",
         :node_ucpsan => "ucp-replica1",
     },
+    {
+        :node_name => "ucp-replica2",
+        :node_managementip => "10.0.100.12",
+        :node_serviceip => "192.168.100.12",
+        :node_mem => "2048",
+        :node_cpu => "1",
+        :node_ucprol=> "replica",
+        :node_ucpsan => "ucp-replica2",
+    },
+    {
+        :node_name => "ucp-node1",
+        :node_managementip => "10.0.100.13",
+        :node_serviceip => "192.168.100.13",
+        :node_mem => "2048",
+        :node_cpu => "1",
+        :node_ucprol=> "node",
+        :node_ucpsan => "ucp-node1",
+    },
+    {
+        :node_name => "ucp-node2",
+        :node_managementip => "10.0.100.14",
+        :node_serviceip => "192.168.100.14",
+        :node_mem => "2048",
+        :node_cpu => "1",
+        :node_ucprol=> "node",
+        :node_ucpsan => "ucp-node2",
+    },
+
 ]
 
 Vagrant.configure(2) do |config|
