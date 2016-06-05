@@ -7,6 +7,7 @@ ucpip=$5
 ucpsan=$6
 
 VAGRANT_PROVISION_DIR=/tmp_deploying_stage
+VAGRANT_LICENSES_DIR=/licenses
 
 echo "USER: $(whoami)"
 
@@ -31,7 +32,7 @@ case ${ucprole} in
 		then
 			echo "---- UCP MASTER CONTROLLER INSTALL ----"
 			echo docker run --rm \
-			--name ucp -v ${VAGRANT_PROVISION_DIR}/docker_subscription.lic:/docker_subscription.lic \
+			--name ucp -v ${VAGRANT_LICENSES_DIR}/docker_subscription.lic:/docker_subscription.lic \
 			-v /var/run/docker.sock:/var/run/docker.sock \
 			docker/ucp install --host-address ${ucpip} --san ${ucpsan}
 

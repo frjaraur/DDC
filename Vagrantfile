@@ -49,6 +49,8 @@ boxes = [
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
   config.vm.synced_folder "tmp_deploying_stage/", "/tmp_deploying_stage"
+  config.vm.synced_folder "licenses/", "/licenses"
+
 
   boxes.each do |opts|
   config.vm.define opts[:node_name] do |config|
