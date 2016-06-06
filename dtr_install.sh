@@ -6,6 +6,7 @@ ucpcontrollerip=$3
 ucpip=$4
 ucpsan=$5
 dtrurl="https://${ucpip}"
+ucpurl="https://${ucpcontrollerip}"
 
 VAGRANT_PROVISION_DIR=/tmp_deploying_stage
 VAGRANT_LICENSES_DIR=/licenses
@@ -14,7 +15,7 @@ VAGRANT_LICENSES_DIR=/licenses
 ucpuser="admin"
 ucppasswd="orca"
 
-DTR_PROVISIONED=${VAGRANT_PROVISION_DIR}/ucp_controller_provisioned
+DTR_INFO=${VAGRANT_PROVISION_DIR}/dtr_info
 UCP_INFO=${VAGRANT_PROVISION_DIR}/ucp_info
 
 echo "PARAMETERS: [$*]"
@@ -29,14 +30,17 @@ echo "ACTION: ${action}"
 
 DTR_NODE_PROVISIONED=${VAGRANT_PROVISION_DIR}/dtr_${nodename}.provisioned
 
-[ -f ${UCP_INFO} ] && echo "UCP isn't provisioned yet ... can not install DTR" && exit 0
+[ ! -f ${UCP_INFO} ] && echo "UCP isn't provisioned yet ... can not install DTR" && exit 0
 
-if [ -f ${DTR_NODE_PROVISIONED} ]
+if [ ! -f ${DTR_NODE_PROVISIONED} ]
 then
 	echo "---- DTR INSTALL ----"
-	curl -k https://${ucpcontrollerip}/ca > ${VAGRANT_PROVISION_DIR}/ucp-ca.pem
+	#echo 	curl -k https://${ucpcontrollerip}/ca > ${VAGRANT_PROVISION_DIR}/ucp-ca.pem
 
-	docker run --rm --name simple-ucp-tools -v /tmp_deploying_stage:/OUTDIR hopla/simple-ucp-tools -n https://10.0.100.10
+	curl -k https://${ucpcontrollerip}/ca > ${VAGRANT_PROVISION_DIR}/ucp-ca.pem
+  #wget -q --no-check-certificate https://10.0.100.10/ca -O -wget -q --no-check-certificate https://10.0.100.10/ca -O - > ${VAGRANT_PROVISION_DIR}/ucp-ca.pem
+
+	docker run --rm --name simple-ucp-tools -v /tmp_deploying_stage:/OUTDIR hopla/simple-ucp-tools -n ${ucpurl}
 
 	export DOCKER_TLS_VERIFY=1
 	export DOCKER_CERT_PATH="/tmp_deploying_stage"
@@ -45,7 +49,7 @@ then
 
 	echo docker run --rm \
 	  docker/dtr install \
-		--ucp-url https://${ucpcontrollerip} \
+		--ucp-url ${ucpurl} \
 		--ucp-node ${nodename} \
 	  --dtr-external-url ${dtrurl} \
 	  --ucp-username ${ucpuser} --ucp-password ${ucppasswd} \
@@ -53,13 +57,15 @@ then
 
 		docker run --rm \
 		  docker/dtr install \
-		  --ucp-url https://${ucpcontrollerip} \
+		  --ucp-url ${ucpurl} \
 		  --ucp-node ${nodename} \
 		  --dtr-external-url ${dtrurl} \
 		  --ucp-username ${ucpuser} --ucp-password ${ucppasswd} \
 		  --ucp-ca "$(cat ${VAGRANT_PROVISION_DIR}/ucp-ca.pem)"
-
-			echo ${dtrurl} > ${DTR_PROVISIONED}
+		if [ $? -eq 0 ]
+		then
+			echo ${dtrurl} > ${DTR_INFO}
 			touch ${DTR_NODE_PROVISIONED}
+		fi
 
 fi

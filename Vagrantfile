@@ -19,34 +19,33 @@ boxes = [
         :node_ucprole => "controller",
         :node_ucpsan => "ucp-manager",
     },
-    # {
-    #     :node_name => "ucp-replica1",
-    #     :node_managementip => "10.0.100.11",
-    #     :node_serviceip => "192.168.100.11",
-    #     :node_mem => "2048",
-    #     :node_cpu => "1",
-    #     :node_ucprole=> "replica",
-    #     :node_ucpsan => "ucp-replica1",
-    # },
-    # {
-    #     :node_name => "ucp-replica2",
-    #     :node_managementip => "10.0.100.12",
-    #     :node_serviceip => "192.168.100.12",
-    #     :node_mem => "2048",
-    #     :node_cpu => "1",
-    #     :node_ucprole=> "replica",
-    #     :node_ucpsan => "ucp-replica2",
-    # },
-    # {
-    #     :node_name => "ucp-node1",
-    #     :node_managementip => "10.0.100.13",
-    #     :node_serviceip => "192.168.100.13",
-    #     :node_mem => "2048",
-    #     :node_cpu => "1",
-    #     :node_ucprole=> "node",
-    #     :node_ucpsan => "ucp-node1",
-    #     :node_dtr => true,
-    # },
+    {
+        :node_name => "ucp-replica1",
+        :node_managementip => "10.0.100.11",
+        :node_serviceip => "192.168.100.11",
+        :node_mem => "2048",
+        :node_cpu => "1",
+        :node_ucprole=> "replica",
+        :node_ucpsan => "ucp-replica1",
+    },
+    {
+        :node_name => "ucp-replica2",
+        :node_managementip => "10.0.100.12",
+        :node_serviceip => "192.168.100.12",
+        :node_mem => "2048",
+        :node_cpu => "1",
+        :node_ucprole=> "replica",
+        :node_ucpsan => "ucp-replica2",
+    },
+    {
+        :node_name => "ucp-node1",
+        :node_managementip => "10.0.100.13",
+        :node_serviceip => "192.168.100.13",
+        :node_mem => "2048",
+        :node_cpu => "1",
+        :node_ucprole=> "node",
+        :node_ucpsan => "ucp-node1",
+    },
     {
         :node_name => "ucp-node2",
         :node_managementip => "10.0.100.14",
@@ -55,6 +54,7 @@ boxes = [
         :node_cpu => "1",
         :node_ucprole=> "node",
         :node_ucpsan => "ucp-node2",
+        :node_dtr => true,
     },
 
 ]
@@ -110,11 +110,12 @@ Vagrant.configure(2) do |config|
 
       ## ADD HOSTS
       config.vm.provision "shell", inline: <<-SHELL
-        echo "10.0.200.11 ucp-manager ucp-manager.dockerlab.local" >>/etc/hosts
-        echo "10.0.200.12 ucp-node1 ucp-node1.dockerlab.local" >>/etc/hosts
-        echo "10.0.200.13 ucp-node2 ucp-node2.dockerlab.local" >>/etc/hosts
-        echo "10.0.200.14 ucp-replica1 ucp-replica1.dockerlab.local" >>/etc/hosts
-        echo "10.0.200.15 ucp-replica2 ucp-replica2.dockerlab.local" >>/etc/hosts
+        echo "10.0.200.10 ucp-manager ucp-manager.dockerlab.local" >>/etc/hosts
+        echo "10.0.200.11 ucp-replica1 ucp-replica1.dockerlab.local" >>/etc/hosts
+        echo "10.0.200.12 ucp-replica2 ucp-replica2.dockerlab.local" >>/etc/hosts
+        echo "10.0.200.13 ucp-node1 ucp-node1.dockerlab.local" >>/etc/hosts
+        echo "10.0.200.14 ucp-node2 ucp-node2.dockerlab.local" >>/etc/hosts
+
       SHELL
 
       nodename=opts[:node_name]

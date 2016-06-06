@@ -41,16 +41,17 @@ case ${ucprole} in
 			-v /var/run/docker.sock:/var/run/docker.sock \
 			docker/ucp install --host-address ${ucpip} --san ${ucpsan}
 
+			if [ $? -eq 0 ]
+			then
+				echo "---- Preparing UCP Fingerprint ----"
+				ucpfingerprint=$(docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp fingerprint )
+				ucpcontrollerurl="https://${ucpcontrollerip}"
 
-			echo "---- Preparing UCP Fingerprint ----"
-			ucpfingerprint=$(docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp fingerprint )
-			ucpcontrollerurl="https://${ucpcontrollerip}"
-
-			echo ${ucpcontrollerurl} > ${UCP_INFO}
-			echo ${ucpfingerprint} >> ${UCP_INFO}
-
-			touch ${UCP_NODE_PROVISIONED}
-
+				echo ${ucpcontrollerurl} > ${UCP_INFO}
+				echo ${ucpfingerprint} >> ${UCP_INFO}
+				service docker restart
+				touch ${UCP_NODE_PROVISIONED}
+			fi
 		fi
 
 
