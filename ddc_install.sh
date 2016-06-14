@@ -9,8 +9,6 @@ ucpsan=$6
 VAGRANT_PROVISION_DIR=/tmp_deploying_stage
 VAGRANT_LICENSES_DIR=/licenses
 
-echo "USER: $(whoami)"
-
 UCP_INFO=${VAGRANT_PROVISION_DIR}/ucp_info
 UCP_FINGERPRINT=""
 
@@ -130,7 +128,7 @@ case ${ucprole} in
 	;;
 
 	*)
-		echo "Undefined DDC UCP role"
+		echo "Undefined DDC UCP role" && exit 0
 	;;
 
 esac

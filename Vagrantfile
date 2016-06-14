@@ -6,6 +6,7 @@ else
   global_action="install"
 end
 
+## DEFAULTS
 ucpcontrollerip="null"
 dtrurl="https://node2"
 
@@ -13,7 +14,7 @@ boxes = [
     {
         :node_name => "ucp-manager",
         :node_managementip => "10.0.100.10",
-        :node_serviceip => "192.168.100.10",
+        :node_storageip => "192.168.100.10",
         :node_mem => "3072",
         :node_cpu => "1",
         :node_ucprole => "controller",
@@ -22,7 +23,7 @@ boxes = [
     {
         :node_name => "ucp-replica1",
         :node_managementip => "10.0.100.11",
-        :node_serviceip => "192.168.100.11",
+        :node_storageip => "192.168.100.11",
         :node_mem => "2048",
         :node_cpu => "1",
         :node_ucprole=> "replica",
@@ -31,7 +32,7 @@ boxes = [
     {
         :node_name => "ucp-replica2",
         :node_managementip => "10.0.100.12",
-        :node_serviceip => "192.168.100.12",
+        :node_storageip => "192.168.100.12",
         :node_mem => "2048",
         :node_cpu => "1",
         :node_ucprole=> "replica",
@@ -40,7 +41,7 @@ boxes = [
     {
         :node_name => "ucp-node1",
         :node_managementip => "10.0.100.13",
-        :node_serviceip => "192.168.100.13",
+        :node_storageip => "192.168.100.13",
         :node_mem => "2048",
         :node_cpu => "1",
         :node_ucprole=> "node",
@@ -49,14 +50,22 @@ boxes = [
     {
         :node_name => "ucp-node2",
         :node_managementip => "10.0.100.14",
-        :node_serviceip => "192.168.100.14",
+        :node_storageip => "192.168.100.14",
         :node_mem => "2048",
         :node_cpu => "1",
         :node_ucprole=> "node",
         :node_ucpsan => "ucp-node2",
         :node_dtr => true,
     },
-
+    # {
+    #     :node_name => "ucp-client",
+    #     :node_managementip => "10.0.100.100",
+    #     :node_storageip => "192.168.100.100",
+    #     :node_mem => "2048",
+    #     :node_cpu => "1",
+    #     :node_ucprole=> "client",
+    #     :node_ucpsan => "null",
+    # },
 ]
 
 Vagrant.configure(2) do |config|
@@ -83,7 +92,7 @@ Vagrant.configure(2) do |config|
       virtualbox__intnet: "DOCKER_PUBLIC"
 
       config.vm.network "private_network",
-      ip: opts[:node_serviceip],
+      ip: opts[:node_storageip],
       virtualbox__intnet: "DOCKER_STORAGE"
 
 
@@ -93,7 +102,7 @@ Vagrant.configure(2) do |config|
       end
 
       config.vm.provision "shell", inline: <<-SHELL
-        sudo apt-get update -qq
+        sudo apt-get update -qq && apt-get install -qq chrony && timedatectl set-timezone Europe/Madrid
       SHELL
 
       ## INSTALL DOCKER ENGINE
@@ -106,15 +115,16 @@ Vagrant.configure(2) do |config|
         sudo apt-get update -qq && sudo apt-get install -qq docker-engine
 	      echo "DOCKER_OPTS='-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock'" >> /etc/default/docker
 	      sudo service docker restart
+        sudo usermod -aG docker vagrant
       SHELL
 
       ## ADD HOSTS
       config.vm.provision "shell", inline: <<-SHELL
-        echo "10.0.200.10 ucp-manager ucp-manager.dockerlab.local" >>/etc/hosts
-        echo "10.0.200.11 ucp-replica1 ucp-replica1.dockerlab.local" >>/etc/hosts
-        echo "10.0.200.12 ucp-replica2 ucp-replica2.dockerlab.local" >>/etc/hosts
-        echo "10.0.200.13 ucp-node1 ucp-node1.dockerlab.local" >>/etc/hosts
-        echo "10.0.200.14 ucp-node2 ucp-node2.dockerlab.local" >>/etc/hosts
+        echo "10.0.100.10 ucp-manager ucp-manager.dockerlab.local" >>/etc/hosts
+        echo "10.0.100.11 ucp-replica1 ucp-replica1.dockerlab.local" >>/etc/hosts
+        echo "10.0.100.12 ucp-replica2 ucp-replica2.dockerlab.local" >>/etc/hosts
+        echo "10.0.100.13 ucp-node1 ucp-node1.dockerlab.local" >>/etc/hosts
+        echo "10.0.100.14 ucp-node2 ucp-node2.dockerlab.local" >>/etc/hosts
 
       SHELL
 
