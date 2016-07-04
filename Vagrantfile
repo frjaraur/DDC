@@ -111,7 +111,7 @@ Vagrant.configure(2) do |config|
         curl -s 'https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e' | sudo apt-key add --import
         sudo apt-get update -qq && sudo apt-get -qq install apt-transport-https
         sudo apt-get install -qq linux-image-extra-virtual
-        echo "deb https://packages.docker.com/1.10/apt/repo ubuntu-trusty main" | sudo tee /etc/apt/sources.list.d/docker.list
+        echo "deb https://packages.docker.com/1.11/apt/repo ubuntu-trusty main" | sudo tee /etc/apt/sources.list.d/docker.list
         sudo apt-get update -qq && sudo apt-get install -qq docker-engine
 	      echo "DOCKER_OPTS='-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock'" >> /etc/default/docker
 	      sudo service docker restart
