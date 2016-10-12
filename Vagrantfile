@@ -133,7 +133,7 @@ Vagrant.configure(2) do |config|
       ucpsan=opts[:node_ucpsan]
       ucpip=opts[:node_managementip]
 
-      config.vm.provision :shell, :path => 'ddc_install.sh', :args => [ global_action, nodename, ucprole, ucpcontrollerip, ucpip, ucpsan ]
+      config.vm.provision :shell, :path => 'ucp_install.sh', :args => [ global_action, nodename, ucprole, ucpcontrollerip, ucpip, ucpsan ]
 
       if opts[:node_dtr] == true
         config.vm.network "forwarded_port", guest: 443, host: 7443, auto_correct: true
