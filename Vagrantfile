@@ -20,43 +20,43 @@ boxes = [
         :node_ucprole => "controller",
         :node_ucpsan => "ucp-manager",
     },
-    {
-        :node_name => "ucp-replica1",
-        :node_managementip => "10.0.100.11",
-        :node_storageip => "192.168.100.11",
-        :node_mem => "2048",
-        :node_cpu => "1",
-        :node_ucprole=> "replica",
-        :node_ucpsan => "ucp-replica1",
-    },
-    {
-        :node_name => "ucp-replica2",
-        :node_managementip => "10.0.100.12",
-        :node_storageip => "192.168.100.12",
-        :node_mem => "2048",
-        :node_cpu => "1",
-        :node_ucprole=> "replica",
-        :node_ucpsan => "ucp-replica2",
-    },
-    {
-        :node_name => "ucp-node1",
-        :node_managementip => "10.0.100.13",
-        :node_storageip => "192.168.100.13",
-        :node_mem => "2048",
-        :node_cpu => "1",
-        :node_ucprole=> "node",
-        :node_ucpsan => "ucp-node1",
-    },
-    {
-        :node_name => "ucp-node2",
-        :node_managementip => "10.0.100.14",
-        :node_storageip => "192.168.100.14",
-        :node_mem => "2048",
-        :node_cpu => "1",
-        :node_ucprole=> "node",
-        :node_ucpsan => "ucp-node2",
-        :node_dtr => true,
-    },
+#    {
+#        :node_name => "ucp-replica1",
+#        :node_managementip => "10.0.100.11",
+#        :node_storageip => "192.168.100.11",
+#        :node_mem => "2048",
+#        :node_cpu => "1",
+#        :node_ucprole=> "replica",
+#        :node_ucpsan => "ucp-replica1",
+#    },
+#    {
+#        :node_name => "ucp-replica2",
+#        :node_managementip => "10.0.100.12",
+#        :node_storageip => "192.168.100.12",
+#        :node_mem => "2048",
+#        :node_cpu => "1",
+#        :node_ucprole=> "replica",
+#        :node_ucpsan => "ucp-replica2",
+#    },
+     {
+         :node_name => "ucp-node1",
+         :node_managementip => "10.0.100.13",
+         :node_storageip => "192.168.100.13",
+         :node_mem => "2048",
+         :node_cpu => "1",
+         :node_ucprole=> "node",
+         :node_ucpsan => "ucp-node1",
+          :node_dtr => true,
+     } ,
+#    {
+#        :node_name => "ucp-node2",
+#        :node_managementip => "10.0.100.14",
+#        :node_storageip => "192.168.100.14",
+#        :node_mem => "2048",
+#        :node_cpu => "1",
+#        :node_ucprole=> "node",
+#        :node_ucpsan => "ucp-node2",
+#    },
     # {
     #     :node_name => "ucp-client",
     #     :node_managementip => "10.0.100.100",
@@ -97,7 +97,7 @@ Vagrant.configure(2) do |config|
 
 
       if opts[:node_ucprole] == "controller"
-    	  config.vm.network "forwarded_port", guest: 443, host: 8443, auto_correct: true
+    	  config.vm.network "forwarded_port", guest: 8443, host: 8443, auto_correct: true
         ucpcontrollerip=opts[:node_managementip]
       end
 

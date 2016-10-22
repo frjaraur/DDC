@@ -32,21 +32,23 @@ case ${ucprole} in
 			echo docker run --rm \
 			--name ucp -v ${VAGRANT_LICENSES_DIR}/docker_subscription.lic:/docker_subscription.lic \
 			-v /var/run/docker.sock:/var/run/docker.sock \
-			docker/ucp install --host-address ${ucpip} --san ${ucpsan} --san 127.0.0.1 --san 0.0.0.0 --san localhost
+			docker/ucp install --host-address ${ucpip} --san ${ucpsan} --san 127.0.0.1 --san 0.0.0.0 --san localhost \
+			--controller-port 8443
 
 			docker run --rm \
 			--name ucp -v ${VAGRANT_LICENSES_DIR}/docker_subscription.lic:/docker_subscription.lic \
 			-v /var/run/docker.sock:/var/run/docker.sock \
-			docker/ucp install --host-address ${ucpip} --san ${ucpsan} --san 127.0.0.1 --san 0.0.0.0 --san localhost
+			docker/ucp install --host-address ${ucpip} --san ${ucpsan} --san 127.0.0.1 --san 0.0.0.0 --san localhost \
+			--controller-port 8443
 
 			if [ $? -eq 0 ]
 			then
 				echo "---- Preparing UCP Fingerprint ----"
 				ucpfingerprint=$(docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp fingerprint )
-				ucpcontrollerurl="https://${ucpcontrollerip}"
+				ucpcontrollerurl="https://${ucpcontrollerip}:8443"
 
-				echo ${ucpcontrollerurl} > ${UCP_INFO}
-				echo ${ucpfingerprint} >> ${UCP_INFO}
+				echo "${ucpcontrollerurl}" > ${UCP_INFO}
+				echo "${ucpfingerprint}" >> ${UCP_INFO}
 				service docker restart
 				touch ${UCP_NODE_PROVISIONED}
 			fi
@@ -68,14 +70,14 @@ case ${ucprole} in
 			echo docker run --rm --name ucp \
 			-v /var/run/docker.sock:/var/run/docker.sock \
 			docker/ucp join --replica --admin-username admin --admin-password orca \
-			--host-address ${ucpip} --san ${ucpsan} \
+			--host-address ${ucpip} --san ${ucpsan} --san 127.0.0.1 --san 0.0.0.0 --san localhost \
 			--url $(head -1 ${UCP_INFO}) \
 			--fingerprint $(tail -1 ${UCP_INFO})
 
 			docker run --rm --name ucp \
 			-v /var/run/docker.sock:/var/run/docker.sock \
 			docker/ucp join --replica --admin-username admin --admin-password orca \
-			--host-address ${ucpip} --san ${ucpsan} \
+			--host-address ${ucpip} --san ${ucpsan} --san 127.0.0.1 --san 0.0.0.0 --san localhost \
 			--url $(head -1 ${UCP_INFO}) \
 			--fingerprint $(tail -1 ${UCP_INFO})
 
@@ -105,14 +107,14 @@ case ${ucprole} in
 			echo docker run --rm --name ucp \
 	  	-v /var/run/docker.sock:/var/run/docker.sock \
 	  	docker/ucp join --admin-username admin --admin-password orca \
-			--host-address ${ucpip} --san ${ucpsan} \
+			--host-address ${ucpip} --san ${ucpsan} --san 127.0.0.1 --san 0.0.0.0 --san localhost \
 			--url $(head -1 ${UCP_INFO}) \
 			--fingerprint $(tail -1 ${UCP_INFO})
 
 			docker run --rm --name ucp \
 	  	-v /var/run/docker.sock:/var/run/docker.sock \
 	  	docker/ucp join --admin-username admin --admin-password orca \
-			--host-address ${ucpip} --san ${ucpsan} \
+			--host-address ${ucpip} --san ${ucpsan} --san 127.0.0.1 --san 0.0.0.0 --san localhost \
 			--url $(head -1 ${UCP_INFO}) \
 			--fingerprint $(tail -1 ${UCP_INFO})
 
