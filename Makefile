@@ -1,11 +1,11 @@
 create:
 	vagrant up
-clean:
+destroy:
 	vagrant destroy -f 
 	rm -rf ./tmp_deploying_stage
 
 recreate:
-	make clean create
+	make destroy create
 
 stop:
 	vboxmanage controlvm ucp-node1 poweroff
