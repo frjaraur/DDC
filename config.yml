@@ -19,22 +19,22 @@ boxes:
   ucprole: "master"
 
 
-# - name: "ucp-replica1"
-#   fqdn: "ucp-replica1.dockerlab.local"
-#   managementip: "10.0.100.11"
-#   storageip: "192.168.100.11"
-#   mem: "3072"
-#   cpu: "1"
-#   ucprole: "replica"
-#
-# - name: "ucp-replica2"
-#   fqdn: "ucp-replica2.dockerlab.local"
-#   managementip: "10.0.100.12"
-#   storageip: "192.168.100.12"
-#   mem: "3072"
-#   cpu: "1"
-#   ucprole: "replica"
-#
+- name: "ucp-replica1"
+  fqdn: "ucp-replica1.dockerlab.local"
+  managementip: "10.0.100.11"
+  storageip: "192.168.100.11"
+  mem: "3072"
+  cpu: "1"
+  ucprole: "replica"
+
+- name: "ucp-replica2"
+  fqdn: "ucp-replica2.dockerlab.local"
+  managementip: "10.0.100.12"
+  storageip: "192.168.100.12"
+  mem: "3072"
+  cpu: "1"
+  ucprole: "replica"
+
 - name: "ucp-node1"
   fqdn: "ucp-node1.dockerlab.local"
   managementip: "10.0.100.13"
