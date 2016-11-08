@@ -19,13 +19,6 @@ dtrfqdn=config['environment']['dtrfqdn']
 boxes = config['boxes']
 
 
-puts '--------------------------------'
-puts 'UCPFQDN: ['+ucpfqdn+']'
-puts 'UCPIP: ['+ucpip+']'
-puts 'UCPUSER: ['+ucpuser+']'
-puts 'UCPPASSWD: ['+ucppasswd+']'
-puts '--------------------------------'
-
 
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
@@ -40,6 +33,9 @@ Vagrant.configure(2) do |config|
         v.name = node['name']
         v.customize ["modifyvm", :id, "--memory", node['mem']]
         v.customize ["modifyvm", :id, "--cpus", node['cpu']]
+        if node['ucprole'] == "client"
+         v.gui = true
+       end
       end
 
       # config.vm.network "public_network",
@@ -56,9 +52,20 @@ Vagrant.configure(2) do |config|
 
 
       if node['ucprole'] == "master"
+        puts '--------------------------------'
+        puts 'UCPFQDN: ['+ucpfqdn+']'
+        puts 'UCPIP: ['+ucpip+']'
+        puts 'UCPUSER: ['+ucpuser+']'
+        puts 'UCPPASSWD: ['+ucppasswd+']'
+        puts '--------------------------------'
+
     	  config.vm.network "forwarded_port", guest: 8443, host: 8443, auto_correct: true
         ucpcontrollerip=node['managementip']
       end
+
+      config.vm.network "forwarded_port", guest: 6080, host: 6080, auto_correct: true
+      config.vm.network "forwarded_port", guest: 7080, host: 7080, auto_correct: true
+      config.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true
 
       config.vm.provision "shell", inline: <<-SHELL
         sudo apt-get update -qq && apt-get install -qq chrony && timedatectl set-timezone Europe/Madrid

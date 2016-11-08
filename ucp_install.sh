@@ -117,6 +117,23 @@ case ${ucprole} in
 
 	;;
 
+	client)
+		echo "Client install"
+		ucpurl=$(head -1 ${UCP_INFO})
+		mkdir /home/vagrant/bundle
+		docker run --rm --name simple-ucp-tools -v /home/vagrant/bundle:/OUTDIR frjaraur/simple-ucp-tools -n ${ucpurl}
+		sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq lxde xinit firefox unzip zip gpm mlocate console-common chromium-browser 
+		sudo service gpm start
+		sudo update-rc.d gpm enable
+		sudo localectl set-x11-keymap es
+		sudo localectl set-keymap es
+		sudo setxkbmap -layout es
+		#echo -e "XKBMODEL=\"pc105\"\nXKBLAYOUT=\"es\"" > /etc/default/keyboard
+		echo -e "XKBLAYOUT=\"es\"\nXKBMODEL=\"pc105\"\nXKBVARIANT=\"\"\nXKBOPTIONS=\"lv3:ralt_switch,terminate:ctrl_alt_bksp\"" >/etc/default/keyboard
+		echo '@setxkbmap -option lv3:ralt_switch,terminate:ctrl_alt_bksp "es"' | sudo tee -a /etc/xdg/lxsession/LXDE/autostart
+		echo '@setxkbmap -layout "es"'|sudo tee -a /etc/xdg/lxsession/LXDE/autostart
+	;;
+
 	*)
 		echo "Undefined DDC UCP role" && exit 0
 	;;
